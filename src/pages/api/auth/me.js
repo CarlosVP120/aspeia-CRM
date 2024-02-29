@@ -60,6 +60,8 @@ export default function handler(config, response) {
           // ** 401 response will logout user from AuthContext file
           defaultResponse = [401, { error: { error: 'Invalid User' } }]
         } else {
+          console.log('TOKEN REFRESH')
+
           // ** If onTokenExpiration === 'refreshToken' then generate the new token
           const oldTokenDecoded = jwt.decode(token, { complete: true })
 
@@ -68,7 +70,9 @@ export default function handler(config, response) {
           const { id: userId } = oldTokenDecoded.payload
 
           // ** Get user that matches id in token
-          const user = users.find(u => u.id === userId)
+          const { data: userData, error } = await supabase.auth.admin.getUserById(userId)
+
+          const { data: customUserData } = await supabase.from('custom_user_data').select().eq('user_id', userId)
 
           // ** Sign a new token
           const accessToken = jwt.sign({ id: userId }, jwtConfig.secret, {
@@ -79,11 +83,9 @@ export default function handler(config, response) {
           if (typeof window !== 'undefined') {
             window.localStorage.setItem(defaultAuthConfig.storageTokenKeyName, accessToken)
           }
-          const obj = { userData: { ...user, password: undefined } }
 
           // ** return 200 with user data
-          defaultResponse = [200, obj]
-
+          defaultResponse = [200, { userData: { ...userData.user, password: undefined, role: customUserData[0].role } }]
           response.status(defaultResponse[0]).json(defaultResponse[1])
         }
       } else {

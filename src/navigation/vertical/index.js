@@ -123,19 +123,22 @@ const navigation = () => {
           title: 'Analytics',
           path: '/dashboards/analytics',
           action: 'read',
-          subject: 'dashboards'
+          subject: 'dashboards',
+          icon: 'tabler:chart-pie-2'
         },
         {
           title: 'CRM',
           path: '/dashboards/crm',
           action: 'read',
-          subject: 'dashboards'
+          subject: 'dashboards',
+          icon: 'tabler:users'
         },
         {
           title: 'eCommerce',
           path: '/dashboards/ecommerce',
           action: 'read',
-          subject: 'dashboards'
+          subject: 'dashboards',
+          icon: 'tabler:shopping-cart'
         }
       ]
     },
