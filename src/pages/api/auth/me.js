@@ -20,6 +20,14 @@ const users = [
     fullName: 'Jane Doe',
     username: 'janedoe',
     email: 'client@aspeia.com'
+  },
+  {
+    id: 3,
+    role: 'user',
+    password: 'user1',
+    fullName: 'Will Smith',
+    username: 'willsmith',
+    email: 'user@aspeia.com'
   }
 ]
 
@@ -67,7 +75,9 @@ export default function handler(config, response) {
           })
 
           // ** Set new token in localStorage
-          window.localStorage.setItem(defaultAuthConfig.storageTokenKeyName, accessToken)
+          if (typeof window !== 'undefined') {
+            window.localStorage.setItem(defaultAuthConfig.storageTokenKeyName, accessToken)
+          }
           const obj = { userData: { ...user, password: undefined } }
 
           // ** return 200 with user data

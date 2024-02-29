@@ -4,23 +4,138 @@ const navigation = () => {
       title: 'Dashboard',
       icon: 'tabler:smart-home',
 
-      // badgeContent: 'new',
-      badgeColor: 'error',
+      path: '/dashboard',
 
-      // path: '/'
+      // TO ADD PERMISSIONS TO A NAVIGATION ITEM, UNCOMMENT THE FOLLOWING LINES AND ADD TO THE ACL FILE
+      action: 'read',
+      subject: 'dashboard'
+    },
+    {
+      title: 'CRM',
+      icon: 'tabler:users',
+
+      action: 'read',
+      subject: 'crm',
+
+      children: [
+        {
+          title: 'Clients',
+          path: '/crm/clients',
+          action: 'read',
+          subject: 'crm',
+          icon: 'tabler:user'
+        },
+        {
+          title: 'Leads',
+          path: '/',
+          action: 'read',
+          subject: 'crm',
+          icon: 'tabler:load-balancer'
+        },
+        {
+          title: 'Accounts',
+          path: '/',
+          action: 'read',
+          subject: 'crm',
+          icon: 'tabler:building-community'
+        },
+        {
+          title: 'Opportunities',
+          path: '/',
+          action: 'read',
+          subject: 'crm',
+          icon: 'tabler:briefcase'
+        },
+        {
+          title: 'Activities',
+          path: '/',
+          action: 'read',
+          subject: 'crm',
+          icon: 'tabler:calendar'
+        },
+        {
+          title: 'Email',
+          path: '/',
+          action: 'read',
+          subject: 'crm',
+          icon: 'tabler:mail'
+        },
+        {
+          title: 'Reports and Analytics',
+          path: '/',
+          action: 'read',
+          subject: 'crm',
+          icon: 'tabler:brand-google-analytics'
+        },
+        {
+          title: 'Tasks and Reminders',
+          path: '/',
+          action: 'read',
+          subject: 'crm',
+          icon: 'tabler:check'
+        },
+        {
+          title: 'File Manager',
+          path: '/',
+          action: 'read',
+          subject: 'crm',
+          icon: 'tabler:file'
+        },
+        {
+          title: 'Workflow Automation',
+          path: '/',
+          action: 'read',
+          subject: 'crm',
+          icon: 'tabler:settings'
+        },
+        {
+          title: 'User Management',
+          path: '/',
+          action: 'read',
+          subject: 'crm',
+          icon: 'tabler:user-hexagon'
+        },
+        {
+          title: 'Feedback and Surveys',
+          path: '/',
+          action: 'read',
+          subject: 'crm',
+          icon: 'tabler:checkbox'
+        },
+        {
+          title: 'Audit Trail',
+          path: '/',
+          action: 'read',
+          subject: 'crm',
+          icon: 'tabler:shield-check'
+        }
+      ]
+    },
+    {
+      title: 'Dashboards',
+      icon: 'tabler:smart-home',
+
+      // badgeContent: 'new',
+      // badgeColor: 'error',
 
       children: [
         {
           title: 'Analytics',
-          path: '/dashboards/analytics'
+          path: '/dashboards/analytics',
+          action: 'read',
+          subject: 'dashboards'
         },
         {
           title: 'CRM',
-          path: '/dashboards/crm'
+          path: '/dashboards/crm',
+          action: 'read',
+          subject: 'dashboards'
         },
         {
           title: 'eCommerce',
-          path: '/dashboards/ecommerce'
+          path: '/dashboards/ecommerce',
+          action: 'read',
+          subject: 'dashboards'
         }
       ]
     },

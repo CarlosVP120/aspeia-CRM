@@ -40,6 +40,8 @@ const ACLPage = () => {
     </Grid>
   )
 }
+
+// This ACL means that the MINIMUM requirement to view this page is to have 'read' ability on 'acl-page' subject
 ACLPage.acl = {
   action: 'read',
   subject: 'acl-page'

@@ -7,6 +7,7 @@ import CardContent from '@mui/material/CardContent'
 
 // ** Custom Components Import
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
+import Translations from 'src/layouts/components/Translations'
 
 const series = [{ data: [40, 20, 65, 50] }]
 
@@ -75,9 +76,11 @@ const CrmSalesWithAreaChart = () => {
   return (
     <Card>
       <CardContent sx={{ pb: 0 }}>
-        <Typography variant='h5'>Sales</Typography>
+        <Typography variant='h5'>
+          <Translations text='Sales' />
+        </Typography>
         <Typography variant='body2' sx={{ color: 'text.disabled' }}>
-          Last Year
+          <Translations text='Last Year' />
         </Typography>
       </CardContent>
       <ReactApexcharts type='area' height={96} series={series} options={options} />

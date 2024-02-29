@@ -8,8 +8,11 @@ import CustomTextField from 'src/@core/components/mui/text-field'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
+import { Button } from '@mui/material'
 
 const ServerSideToolbar = props => {
+  console.log('ServerSideToolbar -> props', props)
+
   return (
     <Box
       sx={{
@@ -21,7 +24,16 @@ const ServerSideToolbar = props => {
         p: theme => theme.spacing(2, 5, 4, 5)
       }}
     >
-      <GridToolbarExport printOptions={{ disableToolbarButton: true }} />
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <GridToolbarExport printOptions={{ disableToolbarButton: true }} />
+        <Button
+          size='small'
+          variant='contained'
+          onClick={() => props.setShowCheckboxSelection(!props.showCheckboxSelection)}
+        >
+          Toggle Selection
+        </Button>
+      </Box>
       <CustomTextField
         value={props.value}
         placeholder='Search…'

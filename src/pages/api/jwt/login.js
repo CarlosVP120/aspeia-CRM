@@ -17,6 +17,14 @@ const users = [
     fullName: 'Jane Doe',
     username: 'janedoe',
     email: 'client@aspeia.com'
+  },
+  {
+    id: 3,
+    role: 'user',
+    password: 'user1',
+    fullName: 'Will Smith',
+    username: 'willsmith',
+    email: 'user@aspeia.com'
   }
 ]
 

@@ -52,7 +52,7 @@ const data = [
     salary: 19252.12,
     age: '30',
     experience: '0 Year',
-    status: 4
+    status: 1
   },
   {
     id: 3,
@@ -65,7 +65,7 @@ const data = [
     salary: 13076.28,
     age: '66',
     experience: '6 Years',
-    status: 5
+    status: 2
   },
   {
     id: 5,
@@ -130,7 +130,7 @@ const data = [
     salary: 11677.32,
     age: '39',
     experience: '9 Years',
-    status: 5
+    status: 2
   },
   {
     id: 10,
@@ -156,7 +156,7 @@ const data = [
     salary: 16745.47,
     age: '22',
     experience: '2 Years',
-    status: 4
+    status: 1
   },
   {
     id: 13,
@@ -169,7 +169,7 @@ const data = [
     salary: 15488.53,
     age: '36',
     experience: '6 Years',
-    status: 4
+    status: 1
   },
   {
     id: 14,
@@ -195,7 +195,7 @@ const data = [
     salary: 13304.45,
     age: '19',
     experience: '9 Years',
-    status: 5
+    status: 2
   },
   {
     id: 16,
@@ -208,7 +208,7 @@ const data = [
     salary: 11953.08,
     age: '66',
     experience: '6 Years',
-    status: 5
+    status: 2
   },
   {
     id: 17,
@@ -247,7 +247,7 @@ const data = [
     salary: 19653.56,
     age: '41',
     experience: '1 Year',
-    status: 4
+    status: 1
   },
   {
     id: 20,
@@ -299,7 +299,7 @@ const data = [
     salary: 13778.34,
     age: '21',
     experience: '1 Year',
-    status: 5
+    status: 2
   },
   {
     id: 24,
@@ -338,7 +338,7 @@ const data = [
     salary: 16969.63,
     age: '42',
     experience: '2 Years',
-    status: 4
+    status: 1
   },
   {
     id: 27,
@@ -364,7 +364,7 @@ const data = [
     salary: 24027.81,
     age: '28',
     experience: '8 Years',
-    status: 4
+    status: 1
   },
   {
     id: 29,
@@ -403,7 +403,7 @@ const data = [
     salary: 24875.41,
     age: '37',
     experience: '7 Years',
-    status: 5
+    status: 2
   },
   {
     id: 32,
@@ -429,7 +429,7 @@ const data = [
     salary: 14082.44,
     age: '27',
     experience: '7 Years',
-    status: 5
+    status: 2
   },
   {
     id: 34,
@@ -455,7 +455,7 @@ const data = [
     salary: 13835.97,
     age: '46',
     experience: '6 Years',
-    status: 4
+    status: 1
   },
   {
     id: 36,
@@ -468,7 +468,7 @@ const data = [
     salary: 22093.91,
     age: '47',
     experience: '7 Years',
-    status: 4
+    status: 1
   },
   {
     id: 37,
@@ -520,7 +520,7 @@ const data = [
     salary: 10872.83,
     age: '37',
     experience: '7 Years',
-    status: 4
+    status: 1
   },
   {
     id: 41,
@@ -533,7 +533,7 @@ const data = [
     salary: 17471.92,
     age: '65',
     experience: '5 Years',
-    status: 5
+    status: 2
   },
   {
     id: 42,
@@ -585,7 +585,7 @@ const data = [
     salary: 23024.28,
     age: '61',
     experience: '1 Year',
-    status: 4
+    status: 1
   },
   {
     id: 46,
@@ -598,7 +598,7 @@ const data = [
     salary: 10409.9,
     age: '47',
     experience: '7 Years',
-    status: 5
+    status: 2
   },
   {
     id: 47,
@@ -611,7 +611,7 @@ const data = [
     salary: 11446.3,
     age: '64',
     experience: '4 Years',
-    status: 4
+    status: 1
   },
   {
     id: 48,
