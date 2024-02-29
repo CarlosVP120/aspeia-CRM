@@ -1,5 +1,6 @@
 // ** JWT import
 import jwt from 'jsonwebtoken'
+import supabase from 'src/@core/utils/supabase'
 
 const users = [
   {
@@ -28,7 +29,22 @@ const users = [
   }
 ]
 
-export default function handler(request, response) {
+const loginToSupabase = async () => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: 'admin@aspeia.com',
+    password: 'admin'
+  })
+
+  return { data, error }
+}
+
+const upsertUser = async user => {
+  const { data, error } = await supabase.from('users').upsert(user).select()
+
+  return { data, error }
+}
+
+export default async function handler(request, response) {
   // When a POST request is made to /api/jwt/login, return "login"
   // ! These two secrets should be in .env file and not in any other file
   const jwtConfig = {
@@ -43,14 +59,30 @@ export default function handler(request, response) {
     let error = {
       email: ['Something went wrong']
     }
-    const user = users.find(u => u.email === email && u.password === password)
-    if (user) {
+
+    // const user = users.find(u => u.email === email && u.password === password)
+
+    // Get the user from supabase
+    const loginData = await loginToSupabase()
+
+    if (loginData) {
+      const user = loginData.data.user
+
+      // Get the role from the custom_user_data table and add it to the user object
+      const { data: customUserData, error } = await supabase.from('custom_user_data').select().eq('user_id', user.id)
+
+      if (customUserData) {
+        user.role = customUserData[0].role
+      }
+
       const accessToken = jwt.sign({ id: user.id }, jwtConfig.secret, { expiresIn: jwtConfig.expirationTime })
 
       const responseData = {
         accessToken,
         userData: { ...user, password: undefined }
       }
+
+      console.log('responseDataLogin', responseData)
 
       response.status(200).json(responseData)
     } else {

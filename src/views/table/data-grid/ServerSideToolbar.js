@@ -1,7 +1,7 @@
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import { GridToolbarExport } from '@mui/x-data-grid'
+import { GridToolbarExport, GridToolbarColumnsButton, GridToolbarFilterButton } from '@mui/x-data-grid'
 
 // ** Custom Component Import
 import CustomTextField from 'src/@core/components/mui/text-field'
@@ -27,11 +27,26 @@ const ServerSideToolbar = props => {
       <Box sx={{ display: 'flex', gap: 2 }}>
         <GridToolbarExport printOptions={{ disableToolbarButton: true }} />
         <Button
-          size='small'
-          variant='contained'
+          size='medium'
+          variant='tonal'
+          style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+          onClick={() => {
+            props.handleOpen()
+          }}
+        >
+          <Icon icon='tabler:file-import' />
+          Import
+        </Button>
+        <GridToolbarColumnsButton />
+        <GridToolbarFilterButton />
+        <Button
+          size='medium'
+          variant='tonal'
+          style={{ display: 'flex', alignItems: 'center', gap: 8 }}
           onClick={() => props.setShowCheckboxSelection(!props.showCheckboxSelection)}
         >
-          Toggle Selection
+          <Icon icon='tabler:select' />
+          Selection
         </Button>
       </Box>
       <CustomTextField

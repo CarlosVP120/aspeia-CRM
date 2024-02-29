@@ -1,5 +1,6 @@
 // ** JWT import
 import jwt from 'jsonwebtoken'
+import supabase from 'src/@core/utils/supabase'
 
 // ** Default AuthConfig
 import defaultAuthConfig from 'src/configs/auth'
@@ -51,7 +52,7 @@ export default function handler(config, response) {
     let defaultResponse = [200, {}]
 
     // ** Checks if the token is valid or expired
-    jwt.verify(token, jwtConfig.secret, (err, decoded) => {
+    jwt.verify(token, jwtConfig.secret, async (err, decoded) => {
       // ** If token is expired
       if (err) {
         // ** If onTokenExpiration === 'logout' then send 401 error
@@ -82,22 +83,44 @@ export default function handler(config, response) {
 
           // ** return 200 with user data
           defaultResponse = [200, obj]
+
+          response.status(defaultResponse[0]).json(defaultResponse[1])
         }
       } else {
         // ** If token is valid do nothing
         // @ts-ignore
         const userId = decoded.id
 
-        // ** Get user that matches id in token
-        const userData = JSON.parse(JSON.stringify(users.find(u => u.id === userId)))
-        delete userData.password
+        // ** Get user that matches id in token from supabase
+        // const userData = JSON.parse(JSON.stringify(users.find(u => u.id === userId)))
+        // delete userData.password
+
+        const { data: userData, error } = await supabase.auth.admin.getUserById(userId)
+
+        const { data: customUserData } = await supabase.from('custom_user_data').select().eq('user_id', userId)
+
+        console.log('userData', {
+          userData: {
+            ...userData.user,
+            role: customUserData[0].role
+          }
+        })
 
         // ** return 200 with user data
-        defaultResponse = [200, { userData }]
+        defaultResponse = [
+          200,
+          {
+            userData: {
+              ...userData.user,
+              role: customUserData[0].role
+            }
+          }
+        ]
+
+        console.log('defaultResponse', defaultResponse)
+        response.status(defaultResponse[0]).json(defaultResponse[1])
       }
     })
-
-    response.status(defaultResponse[0]).json(defaultResponse[1])
   } else {
     // Handle any other HTTP method
     response.setHeader('Allow', ['GET'])

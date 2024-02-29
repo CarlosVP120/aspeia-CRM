@@ -18,9 +18,13 @@ import ServerSideToolbar from 'src/views/table/data-grid/ServerSideToolbar'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
-import { Button, Icon } from '@mui/material'
+import { Button, Icon, Modal } from '@mui/material'
 import toast from 'react-hot-toast'
 import UserIcon from 'src/layouts/components/UserIcon'
+
+import routesConfig from 'src/configs/routes'
+import supabase from 'src/@core/utils/supabase'
+import TransitionsModal from 'src/@core/components/modal'
 
 // ** Full Name Getter
 const getFullName = params =>
@@ -38,7 +42,7 @@ const getFullName = params =>
 // ** renders client column
 const renderClient = params => {
   const { row } = params
-  const stateNum = Math.floor(Math.random() * 6)
+  const stateNum = row.status - 1
   const states = ['success', 'error', 'warning', 'info', 'primary', 'secondary']
   const color = states[stateNum]
   if (row.avatar.length) {
@@ -59,6 +63,18 @@ const statusObj = {
 }
 
 const columns = [
+  {
+    flex: 0.1,
+    minWidth: 80,
+    field: 'id',
+    headerName: 'ID',
+    renderCell: params => (
+      <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        {params.row.id}
+      </Typography>
+    )
+  },
+
   {
     flex: 0.25,
     minWidth: 290,
@@ -169,6 +185,10 @@ const TableServerSide = () => {
   const [sortColumn, setSortColumn] = useState('full_name')
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 7 })
   const [showCheckboxSelection, setShowCheckboxSelection] = useState(false)
+  const [open, setOpen] = useState(false)
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
+
   function loadServerRows(currentPage, data) {
     return data.slice(currentPage * paginationModel.pageSize, (currentPage + 1) * paginationModel.pageSize)
   }
@@ -176,7 +196,7 @@ const TableServerSide = () => {
   const fetchTableData = useCallback(
     async (sort, q, column) => {
       await axios
-        .get('/api/table/data', {
+        .get(routesConfig.clientsTableEndpoint, {
           params: {
             q,
             sort,
@@ -191,8 +211,23 @@ const TableServerSide = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [paginationModel]
   )
+
   useEffect(() => {
     fetchTableData(sort, searchValue, sortColumn)
+  }, [fetchTableData, searchValue, sort, sortColumn])
+
+  // Realtime Supabase
+  useEffect(() => {
+    const channel = supabase
+      .channel('realtime clients')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'clientes' }, payload =>
+        fetchTableData(sort, searchValue, sortColumn)
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [fetchTableData, searchValue, sort, sortColumn])
 
   const handleSortModel = newModel => {
@@ -212,37 +247,53 @@ const TableServerSide = () => {
   }
 
   return (
-    <Card>
-      <CardHeader title='Clients' />
-      <DataGrid
-        autoHeight
-        pagination
-        rows={rows}
-        rowCount={total}
-        columns={columns}
-        checkboxSelection={showCheckboxSelection}
-        sortingMode='server'
-        paginationMode='server'
-        pageSizeOptions={[7, 10, 25, 50]}
-        paginationModel={paginationModel}
-        onSortModelChange={handleSortModel}
-        slots={{ toolbar: ServerSideToolbar }}
-        onPaginationModelChange={setPaginationModel}
-        slotProps={{
-          baseButton: {
-            size: 'medium',
-            variant: 'tonal'
-          },
-          toolbar: {
-            value: searchValue,
-            showCheckboxSelection,
-            setShowCheckboxSelection,
-            clearSearch: () => handleSearch(''),
-            onChange: event => handleSearch(event.target.value)
-          }
-        }}
-      />
-    </Card>
+    <>
+      <Card>
+        <CardHeader title='Clientes' />
+        <DataGrid
+          autoHeight
+          pagination
+          rows={rows}
+          rowCount={total}
+          columns={columns}
+          checkboxSelection={showCheckboxSelection}
+          onRowSelectionModelChange={ids => {
+            const selectedIDs = new Set(ids)
+            const selectedRowData = rows.filter(row => selectedIDs.has(row.id))
+            console.log('selectedRowData', selectedRowData)
+          }}
+          sortingMode='server'
+          paginationMode='server'
+          pageSizeOptions={[7, 10, 25, 50]}
+          paginationModel={paginationModel}
+          onSortModelChange={handleSortModel}
+          slots={{ toolbar: ServerSideToolbar }}
+          onPaginationModelChange={setPaginationModel}
+          slotProps={{
+            baseButton: {
+              size: 'medium',
+              variant: 'tonal'
+            },
+            toolbar: {
+              value: searchValue,
+              showCheckboxSelection,
+              setShowCheckboxSelection,
+              handleOpen,
+              clearSearch: () => handleSearch(''),
+              onChange: event => handleSearch(event.target.value)
+            }
+          }}
+        />
+      </Card>
+      <TransitionsModal open={open} handleClose={handleClose}>
+        <Typography id='transition-modal-title' variant='h6' component='h2'>
+          Text in a modal
+        </Typography>
+        <Typography id='transition-modal-description' sx={{ mt: 2 }}>
+          Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+        </Typography>
+      </TransitionsModal>
+    </>
   )
 }
 
