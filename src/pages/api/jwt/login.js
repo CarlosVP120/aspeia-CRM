@@ -29,10 +29,10 @@ const users = [
   }
 ]
 
-const loginToSupabase = async () => {
+const loginToSupabase = async (email, password) => {
   const { data, error } = await supabase.auth.signInWithPassword({
-    email: 'admin@aspeia.com',
-    password: 'admin'
+    email,
+    password
   })
 
   return { data, error }
@@ -63,7 +63,7 @@ export default async function handler(request, response) {
     // const user = users.find(u => u.email === email && u.password === password)
 
     // Get the user from supabase
-    const loginData = await loginToSupabase()
+    const loginData = await loginToSupabase(email, password)
 
     if (loginData) {
       const user = loginData.data.user
