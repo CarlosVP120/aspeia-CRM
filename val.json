@@ -1,0 +1,48 @@
+{
+    "id": {
+        "type": "number",
+        "required": true,
+        "label": "ID"
+    },
+    "avatar": {
+        "type": "string",
+        "label": "Avatar"
+    },
+    "full_name": {
+        "type": "string",
+        "required": true,
+        "label": "Nombre"
+    },
+    "post": {
+        "type": "string",
+        "label": "Puesto"
+    },
+    "email": {
+        "type": "string",
+        "label": "Correo Electrónico"
+    },
+    "city": {
+        "type": "string",
+        "label": "Ciudad"
+    },
+    "start_date": {
+        "type": "date",
+        "label": "Fecha de Inicio"
+    },
+    "salary": {
+        "type": "number",
+        "label": "Salario"
+    },
+    "age": {
+        "type": "number",
+        "label": "Edad"
+    },
+    "experience": {
+        "type": "string",
+        "label": "Experiencia"
+    },
+    "status": {
+        "type": "number",
+        "label": "Estado"
+    }
+}

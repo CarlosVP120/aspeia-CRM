@@ -71,15 +71,11 @@ export default async function handler(request, response) {
       // Get the role from the custom_user_data table and add it to the user object
       const { data: customUserData, error } = await supabase.from('custom_user_data').select().eq('user_id', user.id)
 
-      if (customUserData) {
-        user.role = customUserData[0].role
-      }
-
       const accessToken = jwt.sign({ id: user.id }, jwtConfig.secret, { expiresIn: jwtConfig.expirationTime })
 
       const responseData = {
         accessToken,
-        userData: { ...user, password: undefined }
+        userData: { ...user, password: undefined, ...customUserData[0] }
       }
 
       console.log('responseDataLogin', responseData)

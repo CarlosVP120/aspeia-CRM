@@ -10,106 +10,203 @@ const navigation = () => {
       action: 'read',
       subject: 'dashboard'
     },
-    {
-      title: 'CRM',
-      icon: 'tabler:users',
 
+    // {
+    //   title: 'CRM',
+    //   icon: 'tabler:users',
+
+    //   action: 'read',
+    //   subject: 'crm',
+
+    //   children: [
+    //     {
+    //       title: 'Contacts',
+    //       path: '/crm/contacts',
+    //       action: 'read',
+    //       subject: 'crm',
+    //       icon: 'tabler:user'
+    //     },
+    //     {
+    //       title: 'Leads',
+    //       path: '/',
+    //       action: 'read',
+    //       subject: 'crm',
+    //       icon: 'tabler:load-balancer'
+    //     },
+    //     {
+    //       title: 'Accounts',
+    //       path: '/',
+    //       action: 'read',
+    //       subject: 'crm',
+    //       icon: 'tabler:building-community'
+    //     },
+    //     {
+    //       title: 'Opportunities',
+    //       path: '/',
+    //       action: 'read',
+    //       subject: 'crm',
+    //       icon: 'tabler:briefcase'
+    //     },
+    //     {
+    //       title: 'Activities',
+    //       path: '/',
+    //       action: 'read',
+    //       subject: 'crm',
+    //       icon: 'tabler:calendar'
+    //     },
+    //     {
+    //       title: 'Email',
+    //       path: '/',
+    //       action: 'read',
+    //       subject: 'crm',
+    //       icon: 'tabler:mail'
+    //     },
+    //     {
+    //       title: 'Reports and Analytics',
+    //       path: '/',
+    //       action: 'read',
+    //       subject: 'crm',
+    //       icon: 'tabler:brand-google-analytics'
+    //     },
+    //     {
+    //       title: 'Tasks and Reminders',
+    //       path: '/',
+    //       action: 'read',
+    //       subject: 'crm',
+    //       icon: 'tabler:check'
+    //     },
+    //     {
+    //       title: 'File Manager',
+    //       path: '/',
+    //       action: 'read',
+    //       subject: 'crm',
+    //       icon: 'tabler:file'
+    //     },
+    //     {
+    //       title: 'Workflow Automation',
+    //       path: '/',
+    //       action: 'read',
+    //       subject: 'crm',
+    //       icon: 'tabler:settings'
+    //     },
+    //     {
+    //       title: 'User Management',
+    //       path: '/',
+    //       action: 'read',
+    //       subject: 'crm',
+    //       icon: 'tabler:user-hexagon'
+    //     },
+    //     {
+    //       title: 'Feedback and Surveys',
+    //       path: '/',
+    //       action: 'read',
+    //       subject: 'crm',
+    //       icon: 'tabler:checkbox'
+    //     },
+    //     {
+    //       title: 'Audit Trail',
+    //       path: '/',
+    //       action: 'read',
+    //       subject: 'crm',
+    //       icon: 'tabler:shield-check'
+    //     }
+    //   ]
+    // },
+    {
+      sectionTitle: 'CRM',
+      action: 'read',
+      subject: 'crm'
+    },
+    {
+      title: 'Contacts',
+      path: '/crm/contacts',
       action: 'read',
       subject: 'crm',
-
-      children: [
-        {
-          title: 'Clients',
-          path: '/crm/clients',
-          action: 'read',
-          subject: 'crm',
-          icon: 'tabler:user'
-        },
-        {
-          title: 'Leads',
-          path: '/',
-          action: 'read',
-          subject: 'crm',
-          icon: 'tabler:load-balancer'
-        },
-        {
-          title: 'Accounts',
-          path: '/',
-          action: 'read',
-          subject: 'crm',
-          icon: 'tabler:building-community'
-        },
-        {
-          title: 'Opportunities',
-          path: '/',
-          action: 'read',
-          subject: 'crm',
-          icon: 'tabler:briefcase'
-        },
-        {
-          title: 'Activities',
-          path: '/',
-          action: 'read',
-          subject: 'crm',
-          icon: 'tabler:calendar'
-        },
-        {
-          title: 'Email',
-          path: '/',
-          action: 'read',
-          subject: 'crm',
-          icon: 'tabler:mail'
-        },
-        {
-          title: 'Reports and Analytics',
-          path: '/',
-          action: 'read',
-          subject: 'crm',
-          icon: 'tabler:brand-google-analytics'
-        },
-        {
-          title: 'Tasks and Reminders',
-          path: '/',
-          action: 'read',
-          subject: 'crm',
-          icon: 'tabler:check'
-        },
-        {
-          title: 'File Manager',
-          path: '/',
-          action: 'read',
-          subject: 'crm',
-          icon: 'tabler:file'
-        },
-        {
-          title: 'Workflow Automation',
-          path: '/',
-          action: 'read',
-          subject: 'crm',
-          icon: 'tabler:settings'
-        },
-        {
-          title: 'User Management',
-          path: '/',
-          action: 'read',
-          subject: 'crm',
-          icon: 'tabler:user-hexagon'
-        },
-        {
-          title: 'Feedback and Surveys',
-          path: '/',
-          action: 'read',
-          subject: 'crm',
-          icon: 'tabler:checkbox'
-        },
-        {
-          title: 'Audit Trail',
-          path: '/',
-          action: 'read',
-          subject: 'crm',
-          icon: 'tabler:shield-check'
-        }
-      ]
+      icon: 'tabler:user'
+    },
+    {
+      title: 'Leads',
+      path: '/',
+      action: 'read',
+      subject: 'crm',
+      icon: 'tabler:load-balancer'
+    },
+    {
+      title: 'Accounts',
+      path: '/',
+      action: 'read',
+      subject: 'crm',
+      icon: 'tabler:building-community'
+    },
+    {
+      title: 'Opportunities',
+      path: '/',
+      action: 'read',
+      subject: 'crm',
+      icon: 'tabler:briefcase'
+    },
+    {
+      title: 'Activities',
+      path: '/',
+      action: 'read',
+      subject: 'crm',
+      icon: 'tabler:calendar'
+    },
+    {
+      title: 'Email',
+      path: '/',
+      action: 'read',
+      subject: 'crm',
+      icon: 'tabler:mail'
+    },
+    {
+      title: 'Reports and Analytics',
+      path: '/',
+      action: 'read',
+      subject: 'crm',
+      icon: 'tabler:brand-google-analytics'
+    },
+    {
+      title: 'Tasks and Reminders',
+      path: '/',
+      action: 'read',
+      subject: 'crm',
+      icon: 'tabler:check'
+    },
+    {
+      title: 'File Manager',
+      path: '/',
+      action: 'read',
+      subject: 'crm',
+      icon: 'tabler:file'
+    },
+    {
+      title: 'Workflow Automation',
+      path: '/',
+      action: 'read',
+      subject: 'crm',
+      icon: 'tabler:settings'
+    },
+    {
+      title: 'User Management',
+      path: '/',
+      action: 'read',
+      subject: 'crm',
+      icon: 'tabler:user-hexagon'
+    },
+    {
+      title: 'Feedback and Surveys',
+      path: '/',
+      action: 'read',
+      subject: 'crm',
+      icon: 'tabler:checkbox'
+    },
+    {
+      title: 'Audit Trail',
+      path: '/',
+      action: 'read',
+      subject: 'crm',
+      icon: 'tabler:shield-check'
     },
     {
       title: 'Dashboards',

@@ -11,7 +11,7 @@ import Icon from 'src/@core/components/icon'
 import { Button } from '@mui/material'
 
 const ServerSideToolbar = props => {
-  console.log('ServerSideToolbar -> props', props)
+  // console.log('ServerSideToolbar -> props', props)
 
   return (
     <Box
@@ -25,18 +25,34 @@ const ServerSideToolbar = props => {
       }}
     >
       <Box sx={{ display: 'flex', gap: 2 }}>
-        <GridToolbarExport printOptions={{ disableToolbarButton: true }} />
+        <Button
+          size='medium'
+          variant='contained'
+          style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+          sx={{ '&:hover': { bgcolor: 'primary.dark' } }}
+          onClick={() => {
+            props.setModalMode('New')
+            props.setSelectedRow(null)
+            props.handleOpen()
+          }}
+        >
+          <Icon icon='tabler:circle-plus' />
+          Agregar
+        </Button>
         <Button
           size='medium'
           variant='tonal'
           style={{ display: 'flex', alignItems: 'center', gap: 8 }}
           onClick={() => {
+            props.setModalMode('Import')
             props.handleOpen()
           }}
         >
           <Icon icon='tabler:file-import' />
-          Import
+          Importar
         </Button>
+        <GridToolbarExport printOptions={{ disableToolbarButton: true }} />
+
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
         <Button
@@ -46,7 +62,7 @@ const ServerSideToolbar = props => {
           onClick={() => props.setShowCheckboxSelection(!props.showCheckboxSelection)}
         >
           <Icon icon='tabler:select' />
-          Selection
+          Seleccionar
         </Button>
       </Box>
       <CustomTextField

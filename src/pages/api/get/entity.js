@@ -655,12 +655,12 @@ const dataTest = [
 
 export default async function handler(config, response) {
   if (config.method === 'GET') {
-    console.log('GET REQUEST TO /api/get/clients-table')
+    console.log('GET REQUEST TO /api/get/contacts')
 
-    const { q = '', column = '', sort = '' } = config.query
+    const { q = '', column = '', sort = '', entity = '' } = config.query
     const queryLowered = q.toLowerCase()
 
-    const { data, error } = await supabase.from('clientes').select('*')
+    const { data, error } = await supabase.from(entity).select('*')
 
     console.log('SUPADATA>>>>>>', data.length)
 

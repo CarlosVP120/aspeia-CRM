@@ -1,3 +1,4 @@
 export default {
-  clientsTableEndpoint: '/api/get/clients-table'
+  getEntities: '/api/get/entity',
+  getEntityDefs: '/api/get/entity-defs'
 }

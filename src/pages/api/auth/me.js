@@ -85,7 +85,17 @@ export default function handler(config, response) {
           }
 
           // ** return 200 with user data
-          defaultResponse = [200, { userData: { ...userData.user, password: undefined, role: customUserData[0].role } }]
+          defaultResponse = [
+            200,
+            {
+              userData: {
+                ...userData.user,
+                password: undefined,
+                ...customUserData[0]
+              }
+            }
+          ]
+
           response.status(defaultResponse[0]).json(defaultResponse[1])
         }
       } else {
@@ -104,7 +114,7 @@ export default function handler(config, response) {
         console.log('userData', {
           userData: {
             ...userData.user,
-            role: customUserData[0].role
+            ...customUserData[0]
           }
         })
 
@@ -114,7 +124,7 @@ export default function handler(config, response) {
           {
             userData: {
               ...userData.user,
-              role: customUserData[0].role
+              ...customUserData[0]
             }
           }
         ]

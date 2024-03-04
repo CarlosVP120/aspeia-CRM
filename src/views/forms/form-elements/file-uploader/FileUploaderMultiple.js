@@ -93,11 +93,11 @@ const FileUploaderMultiple = () => {
       {files.length ? (
         <Fragment>
           <List>{fileList}</List>
-          <div className='buttons'>
+          <div className='buttons' style={{ display: 'flex', gap: 8 }}>
             <Button color='error' variant='outlined' onClick={handleRemoveAllFiles}>
               Remove All
             </Button>
-            <Button variant='contained'>Upload Files</Button>
+            <Button variant='outlined'>Upload Files</Button>
           </div>
         </Fragment>
       ) : null}
