@@ -23,6 +23,7 @@ import { Box, Dialog, DialogContent, Fade, MenuItem, Typography } from '@mui/mat
 import CustomAvatar from 'src/@core/components/mui/avatar'
 import { getInitials } from 'src/@core/utils/get-initials'
 import supabase from 'src/@core/utils/supabase'
+import FileUploaderMultiple from 'src/views/forms/form-elements/file-uploader/FileUploaderMultiple'
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Fade ref={ref} {...props} />
@@ -141,6 +142,26 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
     return { user, error }
   }
 
+  const onDelete = async id => {
+    const { data: user, error } = await supabase.from(entity).delete().eq('id', id).select()
+
+    // Show a promise toast with the result
+    toast.promise(
+      new Promise((resolve, reject) => {
+        if (error) {
+          reject(error)
+        } else {
+          resolve(user)
+        }
+      }),
+      {
+        loading: 'Eliminando...',
+        success: 'Contacto eliminado',
+        error: 'Error al eliminar'
+      }
+    )
+  }
+
   const onSubmit = () => {
     setShow(false)
 
@@ -155,6 +176,34 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
     } else if (mode === 'New') {
       onSave(getValues())
       reset()
+    }
+  }
+
+  const onUploadFromCSV = async parsedData => {
+    setShow(false)
+
+    try {
+      const promises = parsedData.map(async client => {
+        const { data, error } = await supabase.from(entity).upsert(client).select()
+
+        if (error) {
+          throw error
+        } else {
+          return data
+        }
+      })
+
+      // Wait for all promises to resolve
+      const results = await Promise.all(promises)
+
+      // Show a single toast based on the results
+      toast.promise(new Promise(resolve => resolve(results)), {
+        loading: 'Guardando...',
+        success: 'Contactos importados',
+        error: 'Error al guardar algún contacto'
+      })
+    } catch (error) {
+      toast.error('Error al realizar la operación')
     }
   }
 
@@ -200,128 +249,170 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
           <Icon icon='tabler:x' fontSize='1.25rem' />
         </CustomCloseButton>
         <Box sx={{ mb: 3, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {currentRow && renderClientBigger({ row: currentRow })}
+          {currentRow && mode != 'New' && mode != 'Import' && renderClientBigger({ row: currentRow })}
           <Typography variant='h3' sx={{ textTransform: 'capitalize' }}>
-            {mode === 'New' ? entity : currentRow?.full_name}
+            {mode === 'New' ? entity : mode === 'Import' ? 'Importar' : currentRow?.full_name}
           </Typography>
           {/* <Typography sx={{ color: 'text.secondary' }}>Updating user details will receive a privacy audit.</Typography> */}
         </Box>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={5}>
-              {mode === 'New'
-                ? entityFields.map((field, index) => {
-                    console.log('field', field)
+              {mode === 'New' ? (
+                entityFields.map((field, index) => {
+                  console.log('field', field)
 
-                    return (
-                      <Grid item xs={12} sm={6} md={4} key={index}>
-                        <Controller
-                          name={field.name}
-                          control={control}
-                          rules={{ required: field.required }}
-                          render={({ field: { value, onChange } }) =>
-                            field.options ? (
-                              <CustomTextField
-                                select
-                                fullWidth
-                                defaultValue=''
-                                label={field.label}
-                                SelectProps={{
-                                  value: value,
-                                  onChange: e => onChange(e)
-                                }}
-                                id='validation-basic-select'
-                                error={Boolean(errors.select)}
-                                aria-describedby='validation-basic-select'
-                                {...(errors.select && { helperText: 'This field is required' })}
-                              >
-                                {field.options.map((option, index) => (
-                                  <MenuItem key={index} value={option}>
-                                    {option}
-                                  </MenuItem>
-                                ))}
-                              </CustomTextField>
-                            ) : (
-                              <CustomTextField
-                                fullWidth
-                                type={field.type}
-                                value={value}
-                                label={field.label}
-                                onChange={onChange}
-                                placeholder={field.placeholder}
-                                error={Boolean(errors[field.name])}
-                                aria-describedby={`validation-basic-${field.name}`}
-                                {...(errors[field.name] && { helperText: 'This field is required' })}
-                              />
-                            )
-                          }
-                        />
-                      </Grid>
-                    )
-                  })
-                : mode != 'Delete'
-                ? currentRowFields.map((field, index) => (
+                  return (
                     <Grid item xs={12} sm={6} md={4} key={index}>
                       <Controller
                         name={field.name}
                         control={control}
-                        rules={{
-                          required: entityFields.find(f => f.name === field.name).required && !field.value
-                        }}
+                        rules={{ required: field.required }}
                         render={({ field: { value, onChange } }) =>
-                          entityFields.find(f => f.name === field.name).options ? (
+                          field.options ? (
                             <CustomTextField
-                              disabled={mode === 'View'}
                               select
                               fullWidth
-                              defaultValue={field.value}
-                              label={entityFields.find(f => f.name === field.name).label}
-                              onChange={e => {
-                                const updatedFields = [...currentRowFields]
-                                updatedFields[index].value = e.target.value
-                                setCurrentRowFields(updatedFields)
-                                console.log('currentRowData Updated', currentRowFields)
+                              defaultValue=''
+                              label={field.label}
+                              SelectProps={{
+                                value: value,
+                                onChange: e => onChange(e)
                               }}
                               id='validation-basic-select'
                               error={Boolean(errors.select)}
                               aria-describedby='validation-basic-select'
                               {...(errors.select && { helperText: 'This field is required' })}
                             >
-                              {entityFields
-                                .find(f => f.name === field.name)
-                                .options.map((option, index) => (
-                                  <MenuItem key={index} value={option}>
-                                    {option}
-                                  </MenuItem>
-                                ))}
+                              {field.options.map((option, index) => (
+                                <MenuItem key={index} value={option}>
+                                  {option}
+                                </MenuItem>
+                              ))}
                             </CustomTextField>
                           ) : (
                             <CustomTextField
-                              disabled={mode === 'View'}
                               fullWidth
-                              type={entityFields.find(f => f.name === field.name).type}
-                              value={field.value}
-                              label={entityFields.find(f => f.name === field.name).label}
-                              InputProps={{
-                                defaultValue: field.value || '' // Set the defaultValue to handle initial values
-                              }}
-                              onChange={e => {
-                                const updatedFields = [...currentRowFields]
-                                updatedFields[index].value = e.target.value
-                                setCurrentRowFields(updatedFields)
-                                console.log('currentRowData Updated', currentRowFields)
-                              }}
+                              type={field.type}
+                              value={value}
+                              label={field.label}
+                              onChange={onChange}
                               placeholder={field.placeholder}
-                              error={Boolean(errors[field.name] && !value)}
+                              error={Boolean(errors[field.name])}
                               aria-describedby={`validation-basic-${field.name}`}
-                              {...(errors[field.name] && { helperText: 'Este campo es requerido' })}
+                              {...(errors[field.name] && { helperText: 'This field is required' })}
                             />
                           )
                         }
                       />
                     </Grid>
-                  ))
-                : null}
+                  )
+                })
+              ) : mode != 'Delete' && mode != 'Import' ? (
+                currentRowFields.map((field, index) => (
+                  <Grid item xs={12} sm={6} md={4} key={index}>
+                    <Controller
+                      name={field.name}
+                      control={control}
+                      rules={{
+                        required: entityFields.find(f => f.name === field.name).required && !field.value
+                      }}
+                      render={({ field: { value, onChange } }) =>
+                        entityFields.find(f => f.name === field.name).options ? (
+                          <CustomTextField
+                            disabled={mode === 'View'}
+                            select
+                            fullWidth
+                            defaultValue={field.value}
+                            label={entityFields.find(f => f.name === field.name).label}
+                            onChange={e => {
+                              const updatedFields = [...currentRowFields]
+                              updatedFields[index].value = e.target.value
+                              setCurrentRowFields(updatedFields)
+                              console.log('currentRowData Updated', currentRowFields)
+                            }}
+                            id='validation-basic-select'
+                            error={Boolean(errors.select)}
+                            aria-describedby='validation-basic-select'
+                            {...(errors.select && { helperText: 'This field is required' })}
+                          >
+                            {entityFields
+                              .find(f => f.name === field.name)
+                              .options.map((option, index) => (
+                                <MenuItem key={index} value={option}>
+                                  {option}
+                                </MenuItem>
+                              ))}
+                          </CustomTextField>
+                        ) : (
+                          <CustomTextField
+                            disabled={mode === 'View'}
+                            fullWidth
+                            type={entityFields.find(f => f.name === field.name).type}
+                            value={field.value}
+                            label={entityFields.find(f => f.name === field.name).label}
+                            InputProps={{
+                              defaultValue: field.value || '' // Set the defaultValue to handle initial values
+                            }}
+                            onChange={e => {
+                              const updatedFields = [...currentRowFields]
+                              updatedFields[index].value = e.target.value
+                              setCurrentRowFields(updatedFields)
+                              console.log('currentRowData Updated', currentRowFields)
+                            }}
+                            placeholder={field.placeholder}
+                            error={Boolean(errors[field.name] && !value)}
+                            aria-describedby={`validation-basic-${field.name}`}
+                            {...(errors[field.name] && { helperText: 'Este campo es requerido' })}
+                          />
+                        )
+                      }
+                    />
+                  </Grid>
+                ))
+              ) : mode === 'Import' ? (
+                <Grid
+                  item
+                  xs={12}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexDirection: 'column',
+                    gap: 2
+                  }}
+                >
+                  <FileUploaderMultiple onUpload={onUploadFromCSV} />
+                </Grid>
+              ) : (
+                <Grid
+                  item
+                  xs={12}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexDirection: 'column',
+                    gap: 2
+                  }}
+                >
+                  <Typography variant='h4' sx={{ textAlign: 'center' }}>
+                    ¿Está seguro que desea eliminar este registro?
+                  </Typography>
+                  <Button
+                    variant='contained'
+                    color='error'
+                    sx={{ display: 'flex', gap: 1 }}
+                    onClick={() => {
+                      setShow(false)
+                      onDelete(currentRow.id)
+                    }}
+                  >
+                    Eliminar
+                    <Icon icon='tabler:trash' fontSize='20px' />
+                  </Button>
+                </Grid>
+              )}
 
               {/* <Grid item xs={12} sm={6}>
                 <Controller
@@ -563,7 +654,14 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
                 </FormControl>
               </Grid> */}
 
-              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Grid
+                item
+                xs={12}
+                sx={{
+                  display: mode === 'View' || mode === 'Import' || mode === 'Delete' ? 'none' : 'flex',
+                  justifyContent: 'flex-end'
+                }}
+              >
                 <Button
                   type='submit'
                   variant='contained'

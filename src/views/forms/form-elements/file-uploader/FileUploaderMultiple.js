@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -14,8 +14,9 @@ import Icon from 'src/@core/components/icon'
 
 // ** Third Party Imports
 import { useDropzone } from 'react-dropzone'
+import Papa from 'papaparse'
 
-const FileUploaderMultiple = () => {
+const FileUploaderMultiple = ({ onUpload }) => {
   // ** State
   const [files, setFiles] = useState([])
 
@@ -40,6 +41,8 @@ const FileUploaderMultiple = () => {
     setFiles([...filtered])
   }
 
+  const [parsedData, setParsedData] = useState([])
+
   const fileList = files.map(file => (
     <ListItem key={file.name}>
       <div className='file-details'>
@@ -63,6 +66,26 @@ const FileUploaderMultiple = () => {
     setFiles([])
   }
 
+  const parseCSV = file => {
+    Papa.parse(file, {
+      header: true,
+      complete: function (results) {
+        setParsedData(results.data)
+        console.log('results', results)
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (files.length) {
+      const reader = new FileReader()
+      reader.onload = function (e) {
+        parseCSV(e.target.result)
+      }
+      reader.readAsText(files[0])
+    }
+  }, [files])
+
   return (
     <Fragment>
       <div {...getRootProps({ className: 'dropzone' })}>
@@ -83,10 +106,10 @@ const FileUploaderMultiple = () => {
             <Icon icon='tabler:upload' fontSize='1.75rem' />
           </Box>
           <Typography variant='h4' sx={{ mb: 2.5 }}>
-            Drop files here or click to upload.
+            Arrastra y suelta archivos aquí
           </Typography>
           <Typography sx={{ color: 'text.secondary' }}>
-            (This is just a demo drop zone. Selected files are not actually uploaded.)
+            (Puedes arrastrar un solo archivo o seleccionar varios dando click)
           </Typography>
         </Box>
       </div>
@@ -97,7 +120,9 @@ const FileUploaderMultiple = () => {
             <Button color='error' variant='outlined' onClick={handleRemoveAllFiles}>
               Remove All
             </Button>
-            <Button variant='outlined'>Upload Files</Button>
+            <Button variant='outlined' onClick={() => onUpload(parsedData)}>
+              Upload
+            </Button>
           </div>
         </Fragment>
       ) : null}
