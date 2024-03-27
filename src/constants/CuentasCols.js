@@ -52,8 +52,7 @@ export const getColumns = (setModalMode, handleOpen) => {
   fetchTableData('contacto')
   fetchTableData('oportunidad')
 
-  return
-  ;[
+  return [
     {
       flex: 1,
       minWidth: 250,
