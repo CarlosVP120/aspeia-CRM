@@ -135,5 +135,10 @@
     "Orders": "Pedidos",
     "Sales": "Ventas",
     "Last Year": "Año Pasado",
-    "Clients": "Clientes"
+    "Clients": "Clientes",
+    "Contacts": "Contactos",
+    "Opportunities": "Oportunidades",
+    "Accounts": "Cuentas",
+    "Activities": "Actividades",
+    "Users": "Usuarios"
 }

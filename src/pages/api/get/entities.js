@@ -655,12 +655,12 @@ const dataTest = [
 
 export default async function handler(config, response) {
   if (config.method === 'GET') {
-    console.log('GET REQUEST TO /api/get/contacts')
+    console.log('GET REQUEST TO /api/get/entities')
 
     const { q = '', column = '', sort = '', entity = '' } = config.query
     const queryLowered = q.toLowerCase()
 
-    const { data, error } = await supabase.from(entity).select('*')
+    const { data, error } = await supabase.from(entity).select('*').order('updated_at', { ascending: false })
 
     console.log('SUPADATA>>>>>>', data.length)
 
@@ -670,12 +670,10 @@ export default async function handler(config, response) {
 
     const filteredData = dataToFilter.filter(
       item =>
-        item.id.toString().toLowerCase().includes(queryLowered) ||
-        item.full_name.toLowerCase().includes(queryLowered) ||
-        item.post.toLowerCase().includes(queryLowered) ||
-        item.email.toLowerCase().includes(queryLowered) ||
-        item.city.toLowerCase().includes(queryLowered) ||
-        item.start_date.toLowerCase().includes(queryLowered)
+        item.id?.toString().toLowerCase().includes(queryLowered) ||
+        item.nombre?.toLowerCase().includes(queryLowered) ||
+        item.puesto?.toLowerCase().includes(queryLowered) ||
+        item.email?.toLowerCase().includes(queryLowered)
     )
 
     response.status(200).json({

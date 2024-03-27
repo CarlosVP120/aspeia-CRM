@@ -45,7 +45,17 @@ const FileUploaderMultiple = ({ onUpload }) => {
 
   const fileList = files.map(file => (
     <ListItem key={file.name}>
-      <div className='file-details'>
+      <div
+        className='file-details'
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          width: '100%',
+          alignItems: 'center',
+          gap: 10,
+          marginRight: 10
+        }}
+      >
         <div className='file-preview'>{renderFilePreview(file)}</div>
         <div>
           <Typography className='file-name'>{file.name}</Typography>
@@ -90,7 +100,17 @@ const FileUploaderMultiple = ({ onUpload }) => {
     <Fragment>
       <div {...getRootProps({ className: 'dropzone' })}>
         <input {...getInputProps()} />
-        <Box sx={{ display: 'flex', textAlign: 'center', alignItems: 'center', flexDirection: 'column' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            textAlign: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+            border: '2px dashed',
+            padding: 10,
+            borderRadius: 4
+          }}
+        >
           <Box
             sx={{
               mb: 8.75,

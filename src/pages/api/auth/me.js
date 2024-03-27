@@ -5,32 +5,12 @@ import supabase from 'src/@core/utils/supabase'
 // ** Default AuthConfig
 import defaultAuthConfig from 'src/configs/auth'
 
-const users = [
-  {
-    id: 1,
-    role: 'admin',
-    password: 'admin',
-    fullName: 'John Doe',
-    username: 'johndoe',
-    email: 'admin@aspeia.com'
-  },
-  {
-    id: 2,
-    role: 'client',
-    password: 'client',
-    fullName: 'Jane Doe',
-    username: 'janedoe',
-    email: 'client@aspeia.com'
-  },
-  {
-    id: 3,
-    role: 'user',
-    password: 'user1',
-    fullName: 'Will Smith',
-    username: 'willsmith',
-    email: 'user@aspeia.com'
+// Avoid the 'API resolved without sending a response' error
+export const config = {
+  api: {
+    externalResolver: true
   }
-]
+}
 
 export default function handler(config, response) {
   // When a POST request is made to /api/jwt/login, return "login"
@@ -95,8 +75,6 @@ export default function handler(config, response) {
               }
             }
           ]
-
-          response.status(defaultResponse[0]).json(defaultResponse[1])
         }
       } else {
         // ** If token is valid do nothing
@@ -111,12 +89,12 @@ export default function handler(config, response) {
 
         const { data: customUserData } = await supabase.from('custom_user_data').select().eq('user_id', userId)
 
-        console.log('userData', {
-          userData: {
-            ...userData.user,
-            ...customUserData[0]
-          }
-        })
+        // console.log('userData', {
+        //   userData: {
+        //     ...userData.user,
+        //     ...customUserData[0]
+        //   }
+        // })
 
         // ** return 200 with user data
         defaultResponse = [
@@ -128,14 +106,14 @@ export default function handler(config, response) {
             }
           }
         ]
-
-        console.log('defaultResponse', defaultResponse)
-        response.status(defaultResponse[0]).json(defaultResponse[1])
       }
+
+      // ** Send response
+      response.status(defaultResponse[0]).json(defaultResponse[1])
     })
   } else {
     // Handle any other HTTP method
     response.setHeader('Allow', ['GET'])
-    response.status(405).end(`Method ${req.method} Not Allowed`)
+    response.status(405).json({ error: { message: `Method ${config.method} Not Allowed` } })
   }
 }

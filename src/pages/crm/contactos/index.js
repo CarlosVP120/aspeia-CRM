@@ -1,3 +1,4 @@
+/* eslint-disable lines-around-comment */
 // ** React Imports
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
 import FormValidationBasic from 'src/views/forms/form-validation/FormValidationBasic'
@@ -16,7 +17,8 @@ import axios from 'axios'
 // ** Custom Components
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
-import ServerSideToolbar from 'src/views/table/data-grid/ServerSideToolbar'
+import ServerSideToolbar from 'src/views/table/data-grid/ServerSideToolbarContactos'
+import CustomFooter from 'src/views/table/data-grid/CustomFooter'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
@@ -40,48 +42,13 @@ import Icon from 'src/@core/components/icon'
 
 import routesConfig from 'src/configs/routes'
 import supabase from 'src/@core/utils/supabase'
-import TransitionsModal from 'src/@core/components/modal'
 import MUIModal from 'src/@core/components/modified-components/dialog'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 
+// ** Columns Import
+import { getColumns } from 'src/constants/ContactosCols'
+
 const ENTITY = 'contacto'
-
-// ** Full Name Getter
-const getFullName = params =>
-  toast(
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      {renderClient(params)}
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-          {params.row.full_name}
-        </Typography>
-      </Box>
-    </Box>
-  )
-
-// ** renders client column
-const renderClient = params => {
-  const { row } = params
-
-  // Map the color using the statusObj
-  const color = statusObj[row.status].color
-
-  if (row.avatar?.length) {
-    return <CustomAvatar src={`/images/avatars/${row.avatar}`} sx={{ mr: 3, width: '2.1rem', height: '2.1rem' }} />
-  } else {
-    return (
-      <CustomAvatar skin='light' color={color} sx={{ mr: 3, fontSize: '.8rem', width: '2.1rem', height: '2.1rem' }}>
-        {getInitials(row.full_name ? row.full_name : 'John Doe')}
-      </CustomAvatar>
-    )
-  }
-}
-
-const statusObj = {
-  ACTIVO: { title: 'Activo', color: 'success' },
-  PERDIDO: { title: 'Perdido', color: 'error' },
-  LEAD: { title: 'Lead', color: 'warning' }
-}
 
 const TableServerSide = () => {
   // ** States
@@ -95,151 +62,15 @@ const TableServerSide = () => {
   const [open, setOpen] = useState(false)
   const [selectedRow, setSelectedRow] = useState(null)
   const [entityDefs, setEntityDefs] = useState([])
-  const [requiredFields, setRequiredFields] = useState([])
   const [modalMode, setModalMode] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [selectedRows, setSelectedRows] = useState([])
 
   const handleOpen = () => {
     setOpen(true)
   }
 
-  const handleClose = () => {
-    setOpen(false)
-  }
-
-  const columns = [
-    {
-      flex: 0.1,
-      minWidth: 80,
-      field: 'id',
-      headerName: 'ID',
-      renderCell: params => (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.id}
-        </Typography>
-      )
-    },
-
-    {
-      flex: 0.25,
-      minWidth: 290,
-      field: 'full_name',
-      headerName: 'Name',
-      renderCell: params => {
-        const { row } = params
-
-        return (
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {renderClient(params)}
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-                {row.full_name}
-              </Typography>
-              <Typography noWrap variant='caption'>
-                {row.email}
-              </Typography>
-            </Box>
-          </Box>
-        )
-      }
-    },
-    {
-      flex: 0.1,
-      type: 'date',
-      minWidth: 120,
-      headerName: 'Date',
-      field: 'start_date',
-      valueGetter: params => new Date(params.value),
-      renderCell: params => (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.start_date}
-        </Typography>
-      )
-    },
-    {
-      flex: 0.1,
-      minWidth: 110,
-      field: 'salary',
-      headerName: 'Salary',
-      renderCell: params => (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.salary}
-        </Typography>
-      )
-    },
-    {
-      flex: 0.1,
-      field: 'age',
-      minWidth: 80,
-      headerName: 'Age',
-      renderCell: params => (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.age}
-        </Typography>
-      )
-    },
-    {
-      flex: 0.1,
-      minWidth: 120,
-      field: 'status',
-      headerName: 'Status',
-      renderCell: params => {
-        const status = statusObj[params.row.status]
-
-        return (
-          <CustomChip
-            rounded
-            size='small'
-            skin='light'
-            label={status.title}
-            color={status.color}
-            sx={{ '& .MuiChip-label': { textTransform: 'capitalize' } }}
-          />
-        )
-      }
-    },
-    {
-      flex: 0.135,
-      minWidth: 140,
-      field: 'actions',
-      headerName: 'Actions',
-      renderCell: params => {
-        return (
-          <Box sx={{ display: 'flex', gap: 0.5 }}>
-            <Button
-              size='small'
-              color='secondary'
-              onClick={() => {
-                setModalMode('View')
-                handleOpen()
-              }}
-            >
-              <UserIcon icon={'tabler:eye'} />
-            </Button>
-            <Button
-              size='small'
-              color='secondary'
-              onClick={() => {
-                setModalMode('Edit')
-                handleOpen()
-              }}
-            >
-              <UserIcon icon={'tabler:edit'} />
-            </Button>
-            <Button
-              size='small'
-              color='secondary'
-              onClick={() => {
-                setModalMode('Delete')
-                handleOpen()
-              }}
-            >
-              <UserIcon icon={'tabler:trash'} />
-            </Button>
-          </Box>
-        )
-      }
-    }
-  ]
+  const columns = getColumns(setModalMode, handleOpen)
 
   function loadServerRows(currentPage, data) {
     return data.slice(currentPage * paginationModel.pageSize, (currentPage + 1) * paginationModel.pageSize)
@@ -247,6 +78,7 @@ const TableServerSide = () => {
 
   const fetchTableData = useCallback(
     async (sort, q, column) => {
+      setLoading(true)
       await axios
         .get(routesConfig.getEntities, {
           params: {
@@ -259,11 +91,33 @@ const TableServerSide = () => {
         .then(res => {
           setTotal(res.data.total)
           setRows(loadServerRows(paginationModel.page, res.data.data))
+          setLoading(false)
         })
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [paginationModel]
   )
+
+  const deleteSelection = async () => {
+    const ids = selectedRows.map(row => row.id)
+
+    // Ask the user if they are sure they want to delete the selected rows
+    const confirm = window.confirm(`¿Estas seguro que quieres borrar ${ids.length} registros?`)
+
+    if (!confirm) return
+
+    await axios
+      .post(routesConfig.deleteEntities, {
+        params: {
+          entity: ENTITY,
+          ids
+        }
+      })
+      .then(res => {
+        console.log('deleted', res)
+        fetchTableData(sort, searchValue, sortColumn)
+      })
+  }
 
   const fetchEntityDefs = async () => {
     await axios
@@ -318,14 +172,6 @@ const TableServerSide = () => {
     fetchTableData(sort, value, sortColumn)
   }
 
-  // Once we get the defs, we set the required fields
-  useEffect(() => {
-    if (entityDefs?.fields) {
-      const requiredFields = Object.entries(entityDefs?.fields).filter(([key, value]) => value.required)
-      setRequiredFields(requiredFields)
-    }
-  }, [entityDefs])
-
   return (
     <>
       <Card>
@@ -335,13 +181,14 @@ const TableServerSide = () => {
         <DataGrid
           autoHeight
           pagination
+          sx={{ overflowX: 'scroll' }}
           rows={rows}
           rowCount={total}
           columns={columns}
-          loading={rows.length === 0}
+          loading={loading}
           onRowClick={e => setSelectedRow(e.row)}
           onRowDoubleClick={e => {
-            setModalMode('View')
+            setModalMode('Edit')
             setSelectedRow(e.row)
             handleOpen()
           }}
@@ -350,6 +197,18 @@ const TableServerSide = () => {
             const selectedIDs = new Set(ids)
             const selectedRowData = rows.filter(row => selectedIDs.has(row.id))
             console.log('selectedRowsData', selectedRowData)
+            setSelectedRows(selectedRowData)
+          }}
+          initialState={{
+            columns: {
+              columnVisibilityModel: {
+                // Hide columns status and traderName, the other columns will remain visible
+                email: false
+                // cuentas: false,
+                // acuerdos: false,
+                // telefono: false
+              }
+            }
           }}
           sortingMode='server'
           paginationMode='server'
@@ -381,37 +240,45 @@ const TableServerSide = () => {
             }
           }}
         />
+        {/* if there are selected rows, show the actions */}
+        {selectedRows.length > 0 && (
+          <CardActions
+            sx={{
+              backgroundColor: 'background.default',
+              justifyContent: 'flex-start',
+              padding: 3,
+              display: 'flex',
+              justifyItems: 'center'
+            }}
+          >
+            <Button
+              size='medium'
+              variant='tonal'
+              style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+              onClick={deleteSelection}
+            >
+              <Icon icon='tabler:trash' />
+              Borrar Selección
+            </Button>
+          </CardActions>
+        )}
       </Card>
-      {/* <TransitionsModal
-        open={open}
-        handleClose={handleClose}
+      <MUIModal
+        currentRow={selectedRow}
+        show={open}
+        setShow={setOpen}
         entity={ENTITY}
         mode={modalMode}
-        setModalMode={setModalMode}
-        selectedRow={selectedRow}
-        setSelectedRow={setSelectedRow}
+        setMode={setModalMode}
         entityDefs={entityDefs}
-        rows={rows}
-        setRows={setRows}
-      /> */}
-      <DatePickerWrapper>
-        <MUIModal
-          currentRow={selectedRow}
-          show={open}
-          setShow={setOpen}
-          entity={ENTITY}
-          mode={modalMode}
-          setMode={setModalMode}
-          entityDefs={entityDefs}
-        />
-      </DatePickerWrapper>
+      />
     </>
   )
 }
 
 TableServerSide.acl = {
   action: 'read',
-  subject: 'clients'
+  subject: 'crm'
 }
 
 export default TableServerSide

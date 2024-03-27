@@ -9,10 +9,11 @@ module.exports = {
   trailingSlash: true,
   reactStrictMode: false,
   webpack: config => {
-    config.resolve.alias = {
+    ;(config.resolve.alias = {
       ...config.resolve.alias,
       apexcharts: path.resolve(__dirname, './node_modules/apexcharts-clevision')
-    }
+    }),
+      (config.experiments = { ...config.experiments, topLevelAwait: true })
 
     return config
   }

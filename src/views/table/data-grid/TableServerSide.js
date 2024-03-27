@@ -14,7 +14,7 @@ import axios from 'axios'
 // ** Custom Components
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
-import ServerSideToolbar from 'src/views/table/data-grid/ServerSideToolbar'
+import ServerSideToolbar from 'src/views/table/data-grid/ServerSideToolbarContactos'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'

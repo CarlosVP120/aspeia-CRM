@@ -119,28 +119,28 @@ const navigation = () => {
     },
     {
       title: 'Contacts',
-      path: '/crm/contacts',
+      path: '/crm/contactos',
       action: 'read',
       subject: 'crm',
       icon: 'tabler:user'
     },
     {
       title: 'Leads',
-      path: '/',
+      path: '/crm/leads',
       action: 'read',
       subject: 'crm',
       icon: 'tabler:load-balancer'
     },
     {
       title: 'Accounts',
-      path: '/',
+      path: '/crm/cuentas',
       action: 'read',
       subject: 'crm',
       icon: 'tabler:building-community'
     },
     {
       title: 'Opportunities',
-      path: '/',
+      path: '/crm/oportunidades',
       action: 'read',
       subject: 'crm',
       icon: 'tabler:briefcase'
@@ -153,61 +153,13 @@ const navigation = () => {
       icon: 'tabler:calendar'
     },
     {
-      title: 'Email',
-      path: '/',
-      action: 'read',
-      subject: 'crm',
-      icon: 'tabler:mail'
-    },
-    {
-      title: 'Reports and Analytics',
-      path: '/',
-      action: 'read',
-      subject: 'crm',
-      icon: 'tabler:brand-google-analytics'
-    },
-    {
-      title: 'Tasks and Reminders',
-      path: '/',
-      action: 'read',
-      subject: 'crm',
-      icon: 'tabler:check'
-    },
-    {
-      title: 'File Manager',
-      path: '/',
-      action: 'read',
-      subject: 'crm',
-      icon: 'tabler:file'
-    },
-    {
-      title: 'Workflow Automation',
-      path: '/',
-      action: 'read',
-      subject: 'crm',
-      icon: 'tabler:settings'
-    },
-    {
-      title: 'User Management',
+      title: 'Users',
       path: '/',
       action: 'read',
       subject: 'crm',
       icon: 'tabler:user-hexagon'
     },
-    {
-      title: 'Feedback and Surveys',
-      path: '/',
-      action: 'read',
-      subject: 'crm',
-      icon: 'tabler:checkbox'
-    },
-    {
-      title: 'Audit Trail',
-      path: '/',
-      action: 'read',
-      subject: 'crm',
-      icon: 'tabler:shield-check'
-    },
+
     {
       title: 'Dashboards',
       icon: 'tabler:smart-home',

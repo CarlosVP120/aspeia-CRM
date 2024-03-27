@@ -39,18 +39,6 @@ const ServerSideToolbar = props => {
           <Icon icon='tabler:circle-plus' />
           Agregar
         </Button>
-        <Button
-          size='medium'
-          variant='tonal'
-          style={{ display: 'flex', alignItems: 'center', gap: 8 }}
-          onClick={() => {
-            props.setModalMode('Import')
-            props.handleOpen()
-          }}
-        >
-          <Icon icon='tabler:file-import' />
-          Importar
-        </Button>
         <GridToolbarExport printOptions={{ disableToolbarButton: true }} />
 
         <GridToolbarColumnsButton />
@@ -61,7 +49,7 @@ const ServerSideToolbar = props => {
           style={{ display: 'flex', alignItems: 'center', gap: 8 }}
           onClick={() => props.setShowCheckboxSelection(!props.showCheckboxSelection)}
         >
-          <Icon icon='tabler:select' />
+          <Icon icon='tabler:checkbox' />
           Seleccionar
         </Button>
       </Box>

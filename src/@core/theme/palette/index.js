@@ -103,6 +103,32 @@ const DefaultPalette = (mode, skin) => {
       disabled: `rgba(${mainColor}, 0.26)`,
       disabledBackground: `rgba(${mainColor}, 0.12)`,
       focus: `rgba(${mainColor}, 0.12)`
+    },
+
+    // Colors for the Contacts
+    mainType: {
+      light: '#8479F2',
+      main: '#6082B6',
+      dark: '#3870c7',
+      contrastText: mode === 'light' ? whiteColor : '#000080'
+    },
+    secondaryType: {
+      light: '#B2B4B8',
+      main: '#6bc3ed',
+      dark: '#949699',
+      contrastText: mode === 'light' ? whiteColor : '#000080'
+    },
+    chipCuentas: {
+      light: '#F2A87D',
+      main: '#F2A87D',
+      dark: '#F2A87D',
+      contrastText: mode === 'light' ? whiteColor : '#8B4000'
+    },
+    chipAcuerdos: {
+      light: '#097969',
+      main: '#097969',
+      dark: '#097969',
+      contrastText: whiteColor
     }
   }
 }

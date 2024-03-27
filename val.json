@@ -1,48 +1,66 @@
 {
     "id": {
-        "type": "number",
-        "required": true,
+        "type": "uuid",
         "label": "ID"
     },
-    "avatar": {
-        "type": "string",
-        "label": "Avatar"
+    "nombre": {
+        "type": "text",
+        "label": "Nombre",
+        "required": true
     },
-    "full_name": {
-        "type": "string",
-        "required": true,
-        "label": "Nombre"
+    "dominio": {
+        "type": "text",
+        "label": "Dominio"
     },
-    "post": {
-        "type": "string",
-        "label": "Puesto"
+    "contactos": {
+        "type": "textarray",
+        "label": "Contactos",
+        "multipleOf": "contacto",
+        "options": []
     },
-    "email": {
-        "type": "string",
-        "label": "Correo Electrónico"
+    "acuerdos": {
+        "type": "textarray",
+        "label": "Acuerdos",
+        "multipleOf": "oportunidad",
+        "options": []
     },
-    "city": {
-        "type": "string",
-        "label": "Ciudad"
-    },
-    "start_date": {
-        "type": "date",
-        "label": "Fecha de Inicio"
-    },
-    "salary": {
+    "prioridad": {
         "type": "number",
-        "label": "Salario"
+        "label": "Prioridad",
+        "options": [
+            "Alta",
+            "Media",
+            "Baja"
+        ]
     },
-    "age": {
-        "type": "number",
-        "label": "Edad"
+    "sector": {
+        "type": "text",
+        "label": "Sector"
     },
-    "experience": {
-        "type": "string",
-        "label": "Experiencia"
+    "tipo": {
+        "type": "text",
+        "label": "Tipo",
+        "options": [
+            "Cliente",
+            "Partner",
+            "Proveedor"
+        ]
     },
-    "status": {
-        "type": "number",
-        "label": "Estado"
+    "descripcion": {
+        "type": "text",
+        "label": "Descripción"
+    },
+    "cantidad_empleados": {
+        "type": "text",
+        "label": "Cantidad de Empleados",
+        "options": [
+            "30+",
+            "100+",
+            "500+"
+        ]
+    },
+    "ubicacion": {
+        "type": "text",
+        "label": "Ubicación"
     }
 }

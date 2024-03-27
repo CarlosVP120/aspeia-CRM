@@ -24,6 +24,9 @@ import CustomAvatar from 'src/@core/components/mui/avatar'
 import { getInitials } from 'src/@core/utils/get-initials'
 import supabase from 'src/@core/utils/supabase'
 import FileUploaderMultiple from 'src/views/forms/form-elements/file-uploader/FileUploaderMultiple'
+import statusObj, { leadObj } from 'src/constants/SelectColores'
+import axios from 'axios'
+import routesConfig from 'src/configs/routes'
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Fade ref={ref} {...props} />
@@ -44,53 +47,44 @@ const CustomCloseButton = styled(IconButton)(({ theme }) => ({
   }
 }))
 
-const statusObj = {
-  ACTIVO: { title: 'Activo', color: 'success' },
-  PERDIDO: { title: 'Perdido', color: 'error' },
-  LEAD: { title: 'Lead', color: 'warning' }
-}
-
 const renderClientBigger = params => {
   const { row } = params
 
-  const color = statusObj[row.status].color
+  const color = statusObj[row.prioridad]?.color || leadObj[row.estado]?.color || 'success'
 
   if (row.avatar?.length) {
     return <CustomAvatar src={`/images/avatars/${row.avatar}`} sx={{ mr: 3, width: '4rem', height: '4rem' }} />
   } else {
     return (
       <CustomAvatar skin='light' color={color} sx={{ mr: 3, fontSize: '1.5rem', width: '4rem', height: '4rem' }}>
-        {getInitials(row.full_name ? row.full_name : 'John Doe')}
+        {getInitials(row.nombre ? row.nombre : 'John Doe')}
       </CustomAvatar>
     )
   }
 }
 
-const CustomInput = forwardRef(({ ...props }, ref) => {
-  return <CustomTextField fullWidth inputRef={ref} {...props} sx={{ width: '100%' }} />
-})
-
 const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRow }) => {
   // Convert entityDefs.fields into an array of objects, where each key is the field name
-  const entityFields = entityDefs?.fields
-    ? Object.keys(entityDefs.fields).map(key => ({ name: key, ...entityDefs.fields[key] }))
-    : []
+  const [entityFields, setEntityFields] = useState([])
 
-  // Convert currentRow into an array of objects, where each key is the field name
+  // Convert currentRow into an array of objects, excluding created_at and updated_at
   const [currentRowFields, setCurrentRowFields] = useState(
-    currentRow ? Object.keys({ ...currentRow }).map(key => ({ name: key, value: currentRow[key] })) : []
+    currentRow
+      ? Object.keys({ ...currentRow })
+          .filter(key => key !== 'created_at' && key !== 'updated_at')
+          .map(key => ({ name: key, value: currentRow[key] }))
+      : []
   )
 
   useEffect(() => {
     setCurrentRowFields(
-      currentRow ? Object.keys({ ...currentRow }).map(key => ({ name: key, value: currentRow[key] })) : []
+      currentRow
+        ? Object.keys({ ...currentRow })
+            .filter(key => key !== 'created_at' && key !== 'updated_at')
+            .map(key => ({ name: key, value: currentRow[key] }))
+        : []
     )
   }, [currentRow])
-
-  // ** States
-  const [languages, setLanguages] = useState([])
-
-  const [newEntity, setNewEntity] = useState({})
 
   const [state, setState] = useState({
     password: '',
@@ -114,11 +108,57 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
 
   console.log('errors', errors)
 
-  // Print the handleSubmit values
+  useEffect(() => {
+    if (entityDefs?.fields) {
+      const updatedFields = Object.keys(entityDefs.fields).map(key => ({
+        name: key,
+        ...entityDefs.fields[key]
+      }))
+      setEntityFields(updatedFields)
+    }
+  }, [entityDefs])
 
-  const handleClickShowPassword = () => {
-    setState({ ...state, showPassword: !state.showPassword })
-  }
+  // Fetch and update options when entityFields changes
+  useEffect(() => {
+    if (entityFields.length > 0) {
+      entityFields.forEach(async field => {
+        if (field.oneOf) {
+          try {
+            const res = await axios.get(routesConfig.getEntities, {
+              params: {
+                entity: field.oneOf
+              }
+            })
+            const updatedFields = [...entityFields]
+            const fieldIndex = updatedFields.findIndex(f => f.name === field.name)
+            updatedFields[fieldIndex].options = res.data.allData
+            setEntityFields(updatedFields)
+          } catch (error) {
+            console.error('Error fetching entities:', error)
+          }
+        } else if (field.multipleOf) {
+          try {
+            const res = await axios.get(routesConfig.getEntities, {
+              params: {
+                entity: field.multipleOf
+              }
+            })
+            const updatedFields = [...entityFields]
+            const fieldIndex = updatedFields.findIndex(f => f.name === field.name)
+
+            updatedFields[fieldIndex].options = res.data.allData
+            setEntityFields(updatedFields)
+          } catch (error) {
+            console.error('Error fetching entities:', error)
+          }
+        }
+      })
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityFields.length]) // Only run when entityFields change
+
+  console.log('entityFields', entityFields)
 
   const onSave = async data => {
     const { data: user, error } = await supabase.from(entity).upsert(data).select()
@@ -156,7 +196,7 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
       }),
       {
         loading: 'Eliminando...',
-        success: 'Contacto eliminado',
+        success: 'Registro eliminado',
         error: 'Error al eliminar'
       }
     )
@@ -239,7 +279,11 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
             if (mode === 'New') {
             } else {
               setCurrentRowFields(
-                currentRow ? Object.keys({ ...currentRow }).map(key => ({ name: key, value: currentRow[key] })) : []
+                currentRow
+                  ? Object.keys({ ...currentRow })
+                      .filter(key => key !== 'created_at' && key !== 'updated_at')
+                      .map(key => ({ name: key, value: currentRow[key] }))
+                  : []
               )
             }
             console.log('currentRowData Reset')
@@ -251,7 +295,7 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
         <Box sx={{ mb: 3, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {currentRow && mode != 'New' && mode != 'Import' && renderClientBigger({ row: currentRow })}
           <Typography variant='h3' sx={{ textTransform: 'capitalize' }}>
-            {mode === 'New' ? entity : mode === 'Import' ? 'Importar' : currentRow?.full_name}
+            {mode === 'New' ? entity : mode === 'Import' ? 'Importar' : currentRow?.nombre}
           </Typography>
           {/* <Typography sx={{ color: 'text.secondary' }}>Updating user details will receive a privacy audit.</Typography> */}
         </Box>
@@ -260,7 +304,7 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
             <Grid container spacing={5}>
               {mode === 'New' ? (
                 entityFields.map((field, index) => {
-                  console.log('field', field)
+                  console.log('fieldNew', field)
 
                   return (
                     <Grid item xs={12} sm={6} md={4} key={index}>
@@ -276,8 +320,25 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
                               defaultValue=''
                               label={field.label}
                               SelectProps={{
-                                value: value,
-                                onChange: e => onChange(e)
+                                value: value || [],
+
+                                // On change, if the field is  multipleOf,add the value to an array, else, just pass the value
+                                onChange: !field.multipleOf
+                                  ? e => onChange(e)
+                                  : e => {
+                                      // If the value is already in the array, remove it, else, add it, but first delete everything that is undefined
+                                      const updatedValue = e.target.value.includes(undefined)
+                                        ? e.target.value.filter(value => value !== undefined)
+                                        : e.target.value.includes(value)
+                                        ? e.target.value.filter(val => val !== value)
+                                        : e.target.value
+
+                                      console.log('updatedValue', updatedValue)
+
+                                      // Add it to the array and update the state
+                                      onChange(updatedValue)
+                                    },
+                                multiple: field.multipleOf ? true : false
                               }}
                               id='validation-basic-select'
                               error={Boolean(errors.select)}
@@ -285,8 +346,8 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
                               {...(errors.select && { helperText: 'This field is required' })}
                             >
                               {field.options.map((option, index) => (
-                                <MenuItem key={index} value={option}>
-                                  {option}
+                                <MenuItem key={index} value={option.id || option.user_id || option}>
+                                  {option.nombre || option.name || option}
                                 </MenuItem>
                               ))}
                             </CustomTextField>
@@ -315,10 +376,10 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
                       name={field.name}
                       control={control}
                       rules={{
-                        required: entityFields.find(f => f.name === field.name).required && !field.value
+                        required: entityFields.find(f => f.name === field.name)?.required && !field.value
                       }}
                       render={({ field: { value, onChange } }) =>
-                        entityFields.find(f => f.name === field.name).options ? (
+                        entityFields.find(f => f.name === field.name)?.options ? (
                           <CustomTextField
                             disabled={mode === 'View'}
                             select
@@ -329,7 +390,19 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
                               const updatedFields = [...currentRowFields]
                               updatedFields[index].value = e.target.value
                               setCurrentRowFields(updatedFields)
-                              console.log('currentRowData Updated', currentRowFields)
+                              console.log('currentRowData Updated Field', currentRowFields)
+                            }}
+                            SelectProps={{
+                              // Multiple select
+                              value: field.value || [],
+                              onChange: e => {
+                                // Completely replace the value with the new one
+                                const updatedFields = [...currentRowFields]
+                                updatedFields[index].value = e.target.value
+                                setCurrentRowFields(updatedFields)
+                                console.log('currentRowData Updated', currentRowFields[index])
+                              },
+                              multiple: entityFields.find(f => f.name === field.name).multipleOf
                             }}
                             id='validation-basic-select'
                             error={Boolean(errors.select)}
@@ -339,18 +412,18 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
                             {entityFields
                               .find(f => f.name === field.name)
                               .options.map((option, index) => (
-                                <MenuItem key={index} value={option}>
-                                  {option}
+                                <MenuItem key={index} value={option.id || option.user_id || option}>
+                                  {option.nombre || option.name || option}
                                 </MenuItem>
                               ))}
                           </CustomTextField>
                         ) : (
                           <CustomTextField
-                            disabled={mode === 'View'}
+                            disabled={mode === 'View' || field.name === 'id'}
                             fullWidth
-                            type={entityFields.find(f => f.name === field.name).type}
+                            type={entityFields.find(f => f.name === field.name)?.type}
                             value={field.value}
-                            label={entityFields.find(f => f.name === field.name).label}
+                            label={entityFields.find(f => f.name === field.name)?.label}
                             InputProps={{
                               defaultValue: field.value || '' // Set the defaultValue to handle initial values
                             }}
@@ -413,246 +486,6 @@ const DialogEditUserInfo = ({ show, setShow, entity, entityDefs, mode, currentRo
                   </Button>
                 </Grid>
               )}
-
-              {/* <Grid item xs={12} sm={6}>
-                <Controller
-                  name='firstName'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <CustomTextField
-                      fullWidth
-                      value={value}
-                      label='First Name'
-                      onChange={onChange}
-                      placeholder='Leonard'
-                      error={Boolean(errors.firstName)}
-                      aria-describedby='validation-basic-first-name'
-                      {...(errors.firstName && { helperText: 'This field is required' })}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name='lastName'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <CustomTextField
-                      fullWidth
-                      value={value}
-                      label='Last Name'
-                      onChange={onChange}
-                      placeholder='Carter'
-                      error={Boolean(errors.lastName)}
-                      aria-describedby='validation-basic-last-name'
-                      {...(errors.lastName && { helperText: 'This field is required' })}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name='email'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <CustomTextField
-                      fullWidth
-                      type='email'
-                      value={value}
-                      label='Email'
-                      onChange={onChange}
-                      error={Boolean(errors.email)}
-                      placeholder='carterleonard@gmail.com'
-                      aria-describedby='validation-basic-email'
-                      {...(errors.email && { helperText: 'This field is required' })}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name='password'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <CustomTextField
-                      fullWidth
-                      value={value}
-                      label='Password'
-                      onChange={onChange}
-                      id='validation-basic-password'
-                      error={Boolean(errors.password)}
-                      type={state.showPassword ? 'text' : 'password'}
-                      {...(errors.password && { helperText: 'This field is required' })}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position='end'>
-                            <IconButton
-                              edge='end'
-                              onClick={handleClickShowPassword}
-                              onMouseDown={e => e.preventDefault()}
-                              aria-label='toggle password visibility'
-                            >
-                              <Icon fontSize='1.25rem' icon={state.showPassword ? 'tabler:eye' : 'tabler:eye-off'} />
-                            </IconButton>
-                          </InputAdornment>
-                        )
-                      }}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name='dob'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <DatePicker
-                      selected={value}
-                      showYearDropdown
-                      showMonthDropdown
-                      onChange={e => onChange(e)}
-                      placeholderText='MM/DD/YYYY'
-                      customInput={
-                        <CustomInput
-                          value={value}
-                          onChange={onChange}
-                          label='Date of Birth'
-                          error={Boolean(errors.dob)}
-                          aria-describedby='validation-basic-dob'
-                          {...(errors.dob && { helperText: 'This field is required' })}
-                        />
-                      }
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name='select'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <CustomTextField
-                      select
-                      fullWidth
-                      defaultValue=''
-                      label='Country'
-                      SelectProps={{
-                        value: value,
-                        onChange: e => onChange(e)
-                      }}
-                      id='validation-basic-select'
-                      error={Boolean(errors.select)}
-                      aria-describedby='validation-basic-select'
-                      {...(errors.select && { helperText: 'This field is required' })}
-                    >
-                      <MenuItem value='UK'>UK</MenuItem>
-                      <MenuItem value='USA'>USA</MenuItem>
-                      <MenuItem value='Australia'>Australia</MenuItem>
-                      <MenuItem value='Germany'>Germany</MenuItem>
-                    </CustomTextField>
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <Controller
-                  name='textarea'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <CustomTextField
-                      rows={4}
-                      fullWidth
-                      multiline
-                      {...field}
-                      label='Bio'
-                      error={Boolean(errors.textarea)}
-                      aria-describedby='validation-basic-textarea'
-                      {...(errors.textarea && { helperText: 'This field is required' })}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl error={Boolean(errors.radio)}>
-                  <FormLabel>Gender</FormLabel>
-                  <Controller
-                    name='radio'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field }) => (
-                      <RadioGroup row {...field} aria-label='gender' name='validation-basic-radio'>
-                        <FormControlLabel
-                          value='female'
-                          label='Female'
-                          sx={errors.radio ? { color: 'error.main' } : null}
-                          control={<Radio sx={errors.radio ? { color: 'error.main' } : null} />}
-                        />
-                        <FormControlLabel
-                          value='male'
-                          label='Male'
-                          sx={errors.radio ? { color: 'error.main' } : null}
-                          control={<Radio sx={errors.radio ? { color: 'error.main' } : null} />}
-                        />
-                        <FormControlLabel
-                          value='other'
-                          label='Other'
-                          sx={errors.radio ? { color: 'error.main' } : null}
-                          control={<Radio sx={errors.radio ? { color: 'error.main' } : null} />}
-                        />
-                      </RadioGroup>
-                    )}
-                  />
-                  {errors.radio && (
-                    <FormHelperText
-                      id='validation-basic-radio'
-                      sx={{ mx: 0, color: 'error.main', fontSize: theme => theme.typography.body2.fontSize }}
-                    >
-                      This field is required
-                    </FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={12} sx={{ pt: theme => `${theme.spacing(2)} !important` }}>
-                <FormControl>
-                  <Controller
-                    name='checkbox'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field }) => (
-                      <FormControlLabel
-                        label='Agree to our terms and conditions'
-                        sx={errors.checkbox ? { color: 'error.main' } : null}
-                        control={
-                          <Checkbox
-                            {...field}
-                            name='validation-basic-checkbox'
-                            sx={errors.checkbox ? { color: 'error.main' } : null}
-                          />
-                        }
-                      />
-                    )}
-                  />
-                  {errors.checkbox && (
-                    <FormHelperText
-                      id='validation-basic-checkbox'
-                      sx={{ mx: 0, color: 'error.main', fontSize: theme => theme.typography.body2.fontSize }}
-                    >
-                      This field is required
-                    </FormHelperText>
-                  )}
-                </FormControl>
-              </Grid> */}
 
               <Grid
                 item
