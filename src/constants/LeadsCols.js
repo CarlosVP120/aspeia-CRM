@@ -43,183 +43,185 @@ const fetchTableData = async ENTITY => {
     })
 }
 
-fetchTableData('custom_user_data')
+export const getColumns = (setModalMode, handleOpen) => {
+  fetchTableData('custom_user_data')
 
-export const getColumns = (setModalMode, handleOpen) => [
-  {
-    flex: 1,
-    minWidth: 250,
-    field: 'nombre',
-    headerName: 'Nombre',
-    renderCell: params => {
-      const { row } = params
+  return [
+    {
+      flex: 1,
+      minWidth: 250,
+      field: 'nombre',
+      headerName: 'Nombre',
+      renderCell: params => {
+        const { row } = params
 
-      return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {renderClient(params)}
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-              {row.nombre}
-            </Typography>
-            <Typography noWrap variant='caption'>
-              {row.email}
-            </Typography>
+        return (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {renderClient(params)}
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+                {row.nombre}
+              </Typography>
+              <Typography noWrap variant='caption'>
+                {row.email}
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-      )
-    }
-  },
-  {
-    flex: 1,
-    field: 'estado',
-    minWidth: 130,
-    headerName: 'Estado',
-    renderCell: params => {
-      const color = leadObj[params.row.estado]?.color || 'success'
+        )
+      }
+    },
+    {
+      flex: 1,
+      field: 'estado',
+      minWidth: 130,
+      headerName: 'Estado',
+      renderCell: params => {
+        const color = leadObj[params.row.estado]?.color || 'success'
 
-      return (
-        <CustomChip
-          rounded
-          size='small'
-          skin='light'
-          label={params.row.estado}
-          color={color}
-          sx={{ '& .MuiChip-label': { textTransform: 'capitalize' } }}
-        />
-      )
-    }
-  },
-  {
-    flex: 1,
-    field: 'responsable',
-    minWidth: 180,
-    headerName: 'Responsable',
-    renderCell: params => {
-      return (
-        <CustomChip
-          rounded
-          size='small'
-          skin='light'
-          label={params.row.responsable}
-          color='primary'
-          sx={{ '& .MuiChip-label': { textTransform: 'capitalize' } }}
-        />
-      )
-    }
-  },
-
-  {
-    flex: 1,
-    minWidth: 150,
-    field: 'empresa',
-    headerName: 'Empresa',
-    renderCell: params => {
-      return (
-        <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-          {params.row.empresa}
-        </Typography>
-      )
-    }
-  },
-  {
-    flex: 1,
-    field: 'puesto',
-    minWidth: 180,
-    headerName: 'Puesto',
-    renderCell: params => {
-      return (
-        <CustomChip
-          rounded
-          size='small'
-          skin='light'
-          label={params.row.puesto}
-          color='primary'
-          sx={{ '& .MuiChip-label': { textTransform: 'capitalize' } }}
-        />
-      )
-    }
-  },
-
-  {
-    flex: 1,
-    minWidth: 200,
-    field: 'email',
-    headerName: 'E-Mail',
-    renderCell: params => {
-      return (
-        <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-          {params.row.email}
-        </Typography>
-      )
-    }
-  },
-  {
-    flex: 1,
-    field: 'telefono',
-    minWidth: 150,
-    headerName: 'Teléfono',
-    renderCell: params => {
-      return (
-        <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-          {params.row.telefono}
-        </Typography>
-      )
-    }
-  },
-  {
-    flex: 1,
-    field: 'ubicacion',
-    minWidth: 150,
-    headerName: 'Ubicación',
-    renderCell: params => {
-      return (
-        <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
-          {params.row.ubicacion}
-        </Typography>
-      )
-    }
-  },
-
-  {
-    flex: 1,
-    minWidth: 200,
-    field: 'actions',
-    headerName: 'Acciones',
-    renderCell: params => {
-      return (
-        <Box sx={{ display: 'flex', gap: 0.5 }}>
-          <Button
+        return (
+          <CustomChip
+            rounded
             size='small'
-            color='secondary'
-            onClick={() => {
-              setModalMode('View')
-              handleOpen()
-            }}
-          >
-            <UserIcon icon={'tabler:eye'} />
-          </Button>
-          <Button
+            skin='light'
+            label={params.row.estado}
+            color={color}
+            sx={{ '& .MuiChip-label': { textTransform: 'capitalize' } }}
+          />
+        )
+      }
+    },
+    {
+      flex: 1,
+      field: 'responsable',
+      minWidth: 180,
+      headerName: 'Responsable',
+      renderCell: params => {
+        return (
+          <CustomChip
+            rounded
             size='small'
-            color='secondary'
-            onClick={() => {
-              setModalMode('Edit')
-              handleOpen()
-            }}
-          >
-            <UserIcon icon={'tabler:edit'} />
-          </Button>
-          <Button
+            skin='light'
+            label={params.row.responsable}
+            color='primary'
+            sx={{ '& .MuiChip-label': { textTransform: 'capitalize' } }}
+          />
+        )
+      }
+    },
+
+    {
+      flex: 1,
+      minWidth: 150,
+      field: 'empresa',
+      headerName: 'Empresa',
+      renderCell: params => {
+        return (
+          <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+            {params.row.empresa}
+          </Typography>
+        )
+      }
+    },
+    {
+      flex: 1,
+      field: 'puesto',
+      minWidth: 180,
+      headerName: 'Puesto',
+      renderCell: params => {
+        return (
+          <CustomChip
+            rounded
             size='small'
-            color='secondary'
-            onClick={() => {
-              setModalMode('Delete')
-              handleOpen()
-            }}
-          >
-            <UserIcon icon={'tabler:trash'} />
-          </Button>
-        </Box>
-      )
+            skin='light'
+            label={params.row.puesto}
+            color='primary'
+            sx={{ '& .MuiChip-label': { textTransform: 'capitalize' } }}
+          />
+        )
+      }
+    },
+
+    {
+      flex: 1,
+      minWidth: 200,
+      field: 'email',
+      headerName: 'E-Mail',
+      renderCell: params => {
+        return (
+          <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+            {params.row.email}
+          </Typography>
+        )
+      }
+    },
+    {
+      flex: 1,
+      field: 'telefono',
+      minWidth: 150,
+      headerName: 'Teléfono',
+      renderCell: params => {
+        return (
+          <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+            {params.row.telefono}
+          </Typography>
+        )
+      }
+    },
+    {
+      flex: 1,
+      field: 'ubicacion',
+      minWidth: 150,
+      headerName: 'Ubicación',
+      renderCell: params => {
+        return (
+          <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+            {params.row.ubicacion}
+          </Typography>
+        )
+      }
+    },
+
+    {
+      flex: 1,
+      minWidth: 200,
+      field: 'actions',
+      headerName: 'Acciones',
+      renderCell: params => {
+        return (
+          <Box sx={{ display: 'flex', gap: 0.5 }}>
+            <Button
+              size='small'
+              color='secondary'
+              onClick={() => {
+                setModalMode('View')
+                handleOpen()
+              }}
+            >
+              <UserIcon icon={'tabler:eye'} />
+            </Button>
+            <Button
+              size='small'
+              color='secondary'
+              onClick={() => {
+                setModalMode('Edit')
+                handleOpen()
+              }}
+            >
+              <UserIcon icon={'tabler:edit'} />
+            </Button>
+            <Button
+              size='small'
+              color='secondary'
+              onClick={() => {
+                setModalMode('Delete')
+                handleOpen()
+              }}
+            >
+              <UserIcon icon={'tabler:trash'} />
+            </Button>
+          </Box>
+        )
+      }
     }
-  }
-]
+  ]
+}
